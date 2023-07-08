@@ -8,8 +8,10 @@ import { generateToken } from "../utils.js";
 const userRouter = express.Router();
 
 userRouter.post("/register", async (req, res) => {
-  const { name, email, password } = req.body;
 
+  const { name, email, password } = req.body;
+  
+  console.log('register route')
 
 
   try {
@@ -31,14 +33,24 @@ userRouter.post("/register", async (req, res) => {
 
     await newUser.save();
 
-    
+    console.log('testi')
+
+    const userAuthenticated = {
+      _id: newUser._id,
+      email: newUser.email,
+      name: newUser.name,
+      isAdmin: newUser.isAdmin,
+      token: generateToken(newUser),
+    };
 
     res.json({
       message:
         "User succesfully created, please login",
+     userAuthenticated 
     });
 
   } catch (error) {
+
     console.log(error);
     //to check mongoose validation error like empty data
     if (error.name === "ValidationError") {
@@ -54,40 +66,7 @@ userRouter.post("/register", async (req, res) => {
     res.status(500).send({ message: "Something went wrong" });
   }
 
-  // try {
-  //   const data = req.body;
-
-  //   console.log(data);
-
-  //   const existUser = await User.findOne({ email: data.email });
-
-  //   if (existUser) {
-  //     return res.status(500).json({ ok: false, msg: 'El correo ya existe' });
-  //   }
-
-  //   // encriptar password
-  //   data.password = await bcrypt.hash(data.password, 10);
-
-  //   // Guardar usuario
-  //   const newUser = await User.create(data);
-
-  //   // Creando Token
-  //   const token = jwt.sign({ id: newUser._doc._id }, process.env.SIGN);
-
-  //   delete newUser._doc.password;
-  //   delete newUser._doc._id;
-
-  //   res.json({
-  //     ok: true,
-  //     msg: 'El usuario fue creado exitosamente',
-  //     data: {
-  //       token,
-  //       ...newUser._doc,
-  //     },
-  //   });
-  // } catch (error) {
-  //   res.status(500).json({ ok: false, msg: error.message });
-  // }
+  
 });
 
 //login endpoint
@@ -126,38 +105,7 @@ userRouter.post("/logIn", async (req, res) => {
     console.log(error);
   }
 
-  // try {
-  //   const data = req.body;
 
-  //   // Verificando Email y Password
-  //   const verifyUser = await User.findOne({ email: data.email });
-
-  //   // Comparamos Passwords
-  //   const verifyPassword = !verifyUser
-  //     ? false
-  //     : await bcrypt.compare(data.password, verifyUser.password);
-
-  //   // Mandamos el Error
-  //   if (!(verifyUser && verifyPassword)) {
-  //     return res
-  //       .status(404)
-  //       .json({ ok: false, msg: 'Correo o password incorrectos' });
-  //   }
-
-  //   // Creando Token
-  //   const token = jwt.sign({ id: verifyUser._doc._id }, process.env.SIGN);
-
-  //   delete verifyUser._doc._id;
-  //   delete verifyUser._doc.password;
-
-  //   res.json({
-  //     ok: true,
-  //     msg: 'Te logueaste con exito',
-  //     data: { ...verifyUser._doc, token },
-  //   });
-  // } catch (error) {
-  //   res.status(500).json({ ok: false, msg: error.message });
-  // }
 });
 
 export default userRouter;
