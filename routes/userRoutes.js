@@ -1,11 +1,14 @@
 import express from "express";
 import bcryptjs from "bcryptjs";
 import User from "../models/userModel.js";
-// import jwt from 'jsonwebtoken';
-
+import axios from 'axios'
 import { generateToken } from "../utils.js";
 
 const userRouter = express.Router();
+
+
+
+
 
 userRouter.post("/register", async (req, res) => {
 
@@ -107,6 +110,74 @@ userRouter.post("/logIn", async (req, res) => {
 
 
 });
+
+
+userRouter.post('/googlelogin', async (req, res) => {
+	console.log('en la ruto google login')
+	const { access_token } = req.body //access token sent from frot ent using the package @react-oauth/google
+
+
+	try {
+
+		//getting aud field to check client id match with our clien id sent from frontend
+		const url = `https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${access_token}`
+		const { data } = await axios(url)
+
+		//here we compare if the client id sent from react is same of the client id of our app
+		if (data.aud != process.env.GOOGLE_CLIENT_ID) {
+			return res.status(400).send({ message: 'Access Token not meant for this app.' })
+		}
+
+
+		//after checking access token is valid and from our app now we need to get the userinfo 
+		//for the login or register funtionallity
+		const urlToGetUserInfo = `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${access_token}`
+		const resp = await axios(urlToGetUserInfo)
+		const { email_verified, name, email, sub } = resp.data //destructuring data we need
+
+
+		//checking if google email es virified or not
+		if (!email_verified) {
+			return res.status(400).send({ message: 'it seems your google account is not verified' })
+		}
+
+		//now checking if an user with this given email exist or not
+		const userDb = await User.findOne({ email })
+
+		//this happen if you already have an account with this google email
+		if (userDb) {
+			const userAuthenticated = {
+				_id: userDb._id,
+				email: userDb.email,
+				name: userDb.name,
+				isAdmin: userDb.isAdmin,
+				token: generateToken(userDb)
+			}
+			return res.json(userAuthenticated)
+		}
+
+
+		//this happen if we do not have an account with this google email, so we create one
+		if (!userDb) {
+			const newUser = new User({ name, email, isVerified: true, password: bcryptjs.hashSync(email + Math.random() + sub) })
+			await newUser.save()
+
+			const userAuthenticated = {
+				_id: newUser._id,
+				email: newUser.email,
+				name: newUser.name,
+				isAdmin: newUser.isAdmin,
+				token: generateToken(newUser)
+			}
+			return res.json(userAuthenticated)
+		}
+
+
+	} catch (error) {
+		console.log(error)
+		res.status(400).send({ message: 'something went wrong' })
+	}
+})
 
 export default userRouter;
 // module.exports = userRouter;
