@@ -1,13 +1,25 @@
-import express from 'express';
-import cors from 'cors';
-import * as dotenv from 'dotenv';
-import mongoose from 'mongoose';
+// import express from 'express';
+// import cors from 'cors';
+// import * as dotenv from 'dotenv';
+// import mongoose from 'mongoose';
+
+const express = require('express')
+const cors = require('cors')
+const dotenv = require('dotenv');
+// require('dotenv').config();
+const mongoose = require('mongoose')
+const app = express();
+dotenv.config();
+
+
+// app.use(cors())
+
 
 // routes import
-import userRouter from './routes/userRoutes.js';
+// import userRouter from './routes/userRoutes.js';
+const userRouter = require('./routes/userRoutes.js')
 
 // Config
-const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors({ origin: '*' }));
@@ -16,7 +28,7 @@ dotenv.config();
 // Routes
 app.use('/api/user', userRouter);
 
-const port = 4000 || process.env.PORT;
+const port = process.env.PORT || 4000
 
 app.listen(port, async () => {
   try {
