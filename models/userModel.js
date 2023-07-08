@@ -1,22 +1,27 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
-// const mongoose = require('mongoose')
+const { Schema } = mongoose
 
-
-const userModel = new mongoose.Schema(
-  {
-    email: {
-      type: String,
-      unique: true,
-      required: [true, 'Email is a required field'],
+const userSchema = new Schema(
+    {
+        name: { type: String, required: [true, 'Name is a required field'] },
+        email: { type: String, required: [true, "Email is a required field"] },
+        password: { type: String, required: [true, "Pass is a required field"] },
+        // password:{type:String, required:[true,"PassWord is a required field"]},
+        isAdmin: { type: Boolean, default: false },
+        // token: { type: String },
+        // isVerified: { type: Boolean, default: false },
+        // cart: [{
+        //     productId: {
+        //         type: Schema.Types.ObjectId,
+        //         ref: 'Product',
+        //     },
+        //     qty:{type:String}
+        // }]
     },
-    password: { type: String, required: [true, 'Pass is a required field'] },
-  },
-  { timestamps: true }
-);
+    { timestamps: true }
+)
 
-const User = mongoose.model('User', userModel);
+const User = mongoose.model("User", userSchema)
 
-export default User;
-// module.exports = User;
-
+export default User
