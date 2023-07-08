@@ -17,7 +17,7 @@ dotenv.config();
 
 // routes import
 // import userRouter from './routes/userRoutes.js';
-const userRouter = require('./routes/userRoutes.js')
+const userRouter = require('./routes/userRoutes')
 
 // Config
 app.use(express.urlencoded({ extended: true }));
