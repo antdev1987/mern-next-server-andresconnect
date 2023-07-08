@@ -4,20 +4,21 @@ import * as dotenv from 'dotenv';
 import mongoose from 'mongoose';
 
 // routes import
-import userRouter  from './routes/userRoutes.js';
+import userRouter from './routes/userRoutes.js';
 
 // Config
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cors({origin: "*"}));
+app.use(cors({ origin: '*' }));
 dotenv.config();
 
 // Routes
 app.use('/api/user', userRouter);
 
+const port = process.env.PORT || 4000;
 
-app.listen(3000, async () => {
+app.listen(port, async () => {
   try {
     await mongoose
       .connect(process.env.MONGO_URI)
