@@ -16,6 +16,10 @@ dotenv.config();
 // Routes
 app.use('/api/user', userRouter);
 
+app.get('/', (req, res) => {
+  res.send('Desde la pagina de inicio')
+})
+
 const port = 4000 || process.env.PORT;
 
 app.listen(port, async () => {
