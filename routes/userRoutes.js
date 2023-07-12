@@ -115,8 +115,6 @@ userRouter.post("/logIn", async (req, res) => {
 userRouter.post('/googlelogin', async (req, res) => {
 	console.log('en la ruto google login')
 	const { access_token } = req.body //access token sent from frot ent using the package @react-oauth/google
-
-
 	try {
 
 		//getting aud field to check client id match with our clien id sent from frontend
