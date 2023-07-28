@@ -3,11 +3,21 @@ import cors from 'cors';
 import * as dotenv from 'dotenv';
 import mongoose from 'mongoose';
 
+// const express = require('express')
+// const cors = require('cors')
+// const dotenv = require('dotenv');
+// const mongoose = require('mongoose')
+
+const app = express();
+// dotenv.config();
+
+app.use(cors());
+
 // routes import
 import userRouter from './routes/userRoutes.js';
+// const userRouter = require('./routes/userRoutes')
 
 // Config
-const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors({ origin: '*' }));
@@ -17,10 +27,10 @@ dotenv.config();
 app.use('/api/user', userRouter);
 
 app.get('/', (req, res) => {
-  res.send('Desde la pagina de inicio')
-})
+  res.send('Desde la pagina de inicio');
+});
 
-const port = 4000 || process.env.PORT;
+const port = process.env.PORT || 4000;
 
 app.listen(port, async () => {
   try {
