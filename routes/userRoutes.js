@@ -2,7 +2,7 @@ import express from "express";
 import bcryptjs from "bcryptjs";
 import User from "../models/userModel.js";
 import axios from "axios";
-import { generateToken } from "../utils.js";
+import { generateToken, isAuth } from "../utils.js";
 import { upload } from "../helpers/multer.js";
 import { cloudinaryUploadFiles } from "../helpers/cloudinaryConfig.js";
 import nodemailer from "nodemailer";
@@ -92,6 +92,7 @@ userRouter.post("/logIn", async (req, res) => {
       email: userDb.email,
       name: userDb.name,
       isAdmin: userDb.isAdmin,
+      isVerificationProcess: userDb.isVerificationProcess,
       token: generateToken(userDb),
     };
 
@@ -139,6 +140,7 @@ userRouter.post("/googlelogin", async (req, res) => {
         email: userDb.email,
         name: userDb.name,
         isAdmin: userDb.isAdmin,
+        isVerificationProcess: userDb.isVerificationProcess,
         token: generateToken(userDb),
       };
       return res.json(userAuthenticated);
@@ -159,6 +161,7 @@ userRouter.post("/googlelogin", async (req, res) => {
         email: newUser.email,
         name: newUser.name,
         isAdmin: newUser.isAdmin,
+        isVerificationProcess: newUser.isVerificationProcess,
         token: generateToken(newUser),
       };
       return res.json(userAuthenticated);
@@ -169,9 +172,18 @@ userRouter.post("/googlelogin", async (req, res) => {
   }
 });
 
-userRouter.post("/userverification", upload, async (req, res) => {
+userRouter.post("/userverification", isAuth, upload, async (req, res) => {
+
+  console.log('en ruta user verification')
+
   const files = req.files;
-   console.log(files, 'files')
+  //  console.log(files, 'files')
+
+  //  console.log(req.user)
+
+
+
+
 
   //definde and put credential using nodemailer to send emails
   // const transport = nodemailer.createTransport({
@@ -191,6 +203,15 @@ userRouter.post("/userverification", upload, async (req, res) => {
   });
 
   try {
+
+    const userDb = await User.findById(req.user._id)
+
+    console.log(userDb,'db')
+
+    userDb.isVerificationProcess = true || userDb.isVerificationProcess
+
+    await userDb.save()
+
     const cloudinaryResut = await cloudinaryUploadFiles(
       files,
       "userverification"
