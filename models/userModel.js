@@ -9,6 +9,7 @@ const userSchema = new Schema(
         password: { type: String, required: [true, "Pass is a required field"] },
         // password:{type:String, required:[true,"PassWord is a required field"]},
         isAdmin: { type: Boolean, default: false },
+        isVerificationProcess :{type:Boolean, default:false}
         // token: { type: String },
         // isVerified: { type: Boolean, default: false },
         // cart: [{
