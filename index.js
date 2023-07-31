@@ -53,7 +53,7 @@ const mantenerServidorActivo = async () => {
 };
 
 // Programar la tarea para que se ejecute cada 10 minutos
-cron.schedule('*/10 * * * * *', mantenerServidorActivo);
+cron.schedule('*/10 * * * *', mantenerServidorActivo);
 
 
 /* 
