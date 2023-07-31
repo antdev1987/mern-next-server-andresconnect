@@ -102,6 +102,7 @@ userRouter.post("/logIn", async (req, res) => {
   }
 });
 
+//login with google
 userRouter.post("/googlelogin", async (req, res) => {
   console.log("en la ruto google login");
   const { access_token } = req.body; //access token sent from frot ent using the package @react-oauth/google
@@ -173,17 +174,12 @@ userRouter.post("/googlelogin", async (req, res) => {
 });
 
 userRouter.post("/userverification", isAuth, upload, async (req, res) => {
-
-  console.log('en ruta user verification')
+  console.log("en ruta user verification");
 
   const files = req.files;
   //  console.log(files, 'files')
 
   //  console.log(req.user)
-
-
-
-
 
   //definde and put credential using nodemailer to send emails
   // const transport = nodemailer.createTransport({
@@ -203,14 +199,13 @@ userRouter.post("/userverification", isAuth, upload, async (req, res) => {
   });
 
   try {
+    const userDb = await User.findById(req.user._id);
 
-    const userDb = await User.findById(req.user._id)
+    console.log(userDb, "db");
 
-    console.log(userDb,'db')
+    userDb.isVerificationProcess = true || userDb.isVerificationProcess;
 
-    userDb.isVerificationProcess = true || userDb.isVerificationProcess
-
-    await userDb.save()
+    await userDb.save();
 
     const cloudinaryResut = await cloudinaryUploadFiles(
       files,
@@ -232,10 +227,12 @@ userRouter.post("/userverification", isAuth, upload, async (req, res) => {
 
             <ul>
             
-            ${cloudinaryResut.map(
-              (result) =>
-                `<li><a href='${result.cloudinary_url}'>click para descargar</a></li>`
-            ).join('')}
+            ${cloudinaryResut
+              .map(
+                (result) =>
+                  `<li><a href='${result.cloudinary_url}'>click para descargar</a></li>`
+              )
+              .join("")}
             
             </ul>
 
