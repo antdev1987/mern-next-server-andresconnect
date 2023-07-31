@@ -37,14 +37,33 @@ app.get('/keep-alive', (req, res) => {
 });
 
 const servidorRenderURL = 'https://mern-next-server-andresconnect.onrender.com/keep-alive';
+const obtenerFechaHoraActual = () => {
+  const fechaHoraActual = new Date();
+
+  const año = fechaHoraActual.getFullYear();
+  const mes = String(fechaHoraActual.getMonth() + 1).padStart(2, '0');
+  const dia = String(fechaHoraActual.getDate()).padStart(2, '0');
+  const horas = String(fechaHoraActual.getHours()).padStart(2, '0');
+  const minutos = String(fechaHoraActual.getMinutes()).padStart(2, '0');
+  const segundos = String(fechaHoraActual.getSeconds()).padStart(2, '0');
+
+  const fechaFormateada = `${año}-${mes}-${dia}`;
+  const horaFormateada = `${horas}:${minutos}:${segundos}`;
+
+  return { fecha: fechaFormateada, hora: horaFormateada };
+};
 
 // Función para realizar la solicitud HTTP al servidor Render
 const mantenerServidorActivo = async () => {
+  const fechaHoraActual = obtenerFechaHoraActual();
+  console.log('Fecha actual:', fechaHoraActual.fecha);
+  console.log('Hora actual:', fechaHoraActual.hora);
   try {
     // Realizar la solicitud GET al endpoint para mantener el servidor Render activo
-    console.log(servidorRenderURL)
+  
     const {data} = await axios(servidorRenderURL);
-    console.log(data)
+
+
     console.log('Solicitud realizada correctamente. El servidor Render está activo.');
   } catch (error) {
     console.error('Error al realizar la solicitud:', error.message);
