@@ -2,6 +2,7 @@ import { v2 as cloudinary } from "cloudinary";
 
 import sharp from "sharp";
 import fs from "fs";
+import tmp from 'tmp'
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -26,8 +27,9 @@ const cloudinaryUploadFiles = async (files, folder) => {
       const image = sharp(path);
       // Redimensiona la imagen a una altura y ancho máximos
       const resizedImage = await image
-        .resize({ width: 1600, height: 1200, fit: "inside" })
-        .jpeg({ quality: 80 })
+        // .resize({ width: 1600, height: 1200, fit: "inside" })
+        .resize({ width: 800, height: 600, fit: "inside" })
+        .jpeg({ quality: 70 })
         .toBuffer();
       const tempPath = `./temp_${originalname}`;
       fs.writeFileSync(tempPath, resizedImage);
@@ -40,8 +42,8 @@ const cloudinaryUploadFiles = async (files, folder) => {
         use_filename: true,
         unique_filename: true,
         filename_override: originalname,
-        // quality:80,
-        // format:'webp'
+        //  quality:80,
+        //  format:'webp'
       });
 
        // Elimina el archivo temporal después de cargarlo en Cloudinary
@@ -60,6 +62,15 @@ const cloudinaryUploadFiles = async (files, folder) => {
     console.log(error);
   }
 };
+
+
+
+
+
+
+
+
+
 
 //this delete one file or list of file if you use a loop to pass all the prublic id to delete
 const cloudinaryDeleteOneFile = async (public_id) => {

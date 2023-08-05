@@ -12,7 +12,8 @@
     "multer": "^1.4.5-lts.1",
     "node-cron": "^3.0.2",
     "nodemailer": "^6.9.4",
-    "sharp": "^0.32.4"
+    "sharp": "^0.32.4",
+    "tmp": "^0.2.1"
   },
   "name": "mern-next-server-andresconnect",
   "version": "1.0.0",
