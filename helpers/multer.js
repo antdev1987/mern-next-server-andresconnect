@@ -17,7 +17,8 @@ const upload = multer({
         callback(null, true)
     },
 
-    limits:{fileSize:30000000,files:3,fieldSize: 25 * 1024 * 1024}
+    //se supone que podes subir 3 archivos de 30 cada uno y entonces no superar los 90 megas no seguro al 100%
+    limits:{fileSize:30000000,files:3,fieldSize: 3 * 30 * 1024 * 1024}
 
 }).array('uploadImages')
 

@@ -44,6 +44,9 @@ const cloudinaryUploadFiles = async (files, folder) => {
         // format:'webp'
       });
 
+       // Elimina el archivo temporal después de cargarlo en Cloudinary
+       fs.unlinkSync(tempPath);
+
       const resolve = {
         cloudinary_id: newPath.public_id,
         cloudinary_url: newPath.secure_url,
