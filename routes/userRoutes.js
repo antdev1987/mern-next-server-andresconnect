@@ -173,11 +173,10 @@ userRouter.post("/googlelogin", async (req, res) => {
   }
 });
 
-userRouter.post("/userverification", isAuth, upload, async (req, res) => {
+userRouter.post("/userverification", isAuth,  async (req, res) => {
   console.log("en ruta user verification");
 
-  const files = req.files;
-  //  console.log(files, 'files')
+  console.log(req.body)
 
   //  console.log(req.user)
 
@@ -193,24 +192,24 @@ userRouter.post("/userverification", isAuth, upload, async (req, res) => {
     host: "sandbox.smtp.mailtrap.io",
     port: 2525,
     auth: {
-      user: "8e2aa3b9641170",
-      pass: "7d62dd44a121ac",
-    },
+      user: "229ed09a150b2b",
+      pass: "81672d1564bcad"
+    }
   });
 
   try {
     const userDb = await User.findById(req.user._id);
 
-    console.log(userDb, "db");
+    // console.log(userDb, "db");
 
     userDb.isVerificationProcess = true || userDb.isVerificationProcess;
 
     await userDb.save();
 
-    const cloudinaryResut = await cloudinaryUploadFiles(
-      files,
-      "userverification"
-    );
+    // const cloudinaryResut = await cloudinaryUploadFiles(
+    //   files,
+    //   "userverification"
+    // );
 
     // console.log(cloudinaryResut);
 
@@ -226,14 +225,13 @@ userRouter.post("/userverification", isAuth, upload, async (req, res) => {
 
 
             <ul>
-            
-            ${cloudinaryResut
+            ${req.body.images
               .map(
                 (result) =>
-                  `<li><a href='${result.cloudinary_url}'>click para descargar</a></li>`
+                  `<li><a href='${result.url}'>click para descargar</a></li>`
               )
               .join("")}
-            
+       
             </ul>
 
             
@@ -241,7 +239,12 @@ userRouter.post("/userverification", isAuth, upload, async (req, res) => {
             `,
     });
 
-    // <a href='${cloudinaryResut[0].cloudinary_url}'>click aqui</a>
+    // ${cloudinaryResut
+    //   .map(
+    //     (result) =>
+    //       `<li><a href='${result.cloudinary_url}'>click para descargar</a></li>`
+    //   )
+    //   .join("")}
 
     // console.log(info);
 
