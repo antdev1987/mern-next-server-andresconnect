@@ -19,6 +19,7 @@ app.use(cors());
 
 // routes import
 import userRouter from './routes/userRoutes.js';
+import publicarRouter from './routes/publicarRoute.js'
 // const userRouter = require('./routes/userRoutes')
 
 // Config
@@ -98,10 +99,7 @@ app.use((err, req, res, next) => {
 
 // Routes of the application
 app.use('/api/user', userRouter);
-
-app.get('/', (req, res) => {
-  res.send('Desde la pagina de inicio');
-});
+app.use('/api/espacio', publicarRouter);
 
 const port = process.env.PORT || 4000;
 

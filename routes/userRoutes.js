@@ -1,31 +1,33 @@
-import express from "express";
-import bcryptjs from "bcryptjs";
-import User from "../models/userModel.js";
-import axios from "axios";
-import { generateToken, isAuth } from "../utils.js";
-import { upload } from "../helpers/multer.js";
-import { cloudinaryUploadFiles } from "../helpers/cloudinaryConfig.js";
-import nodemailer from "nodemailer";
+import express from 'express';
+import bcryptjs from 'bcryptjs';
+import User from '../models/userModel.js';
+import Publicar from '../models/publicarModel.js';
+import axios from 'axios';
+import { generateToken, isAuth } from '../utils.js';
+import { upload } from '../helpers/multer.js';
+import { cloudinaryUploadFiles } from '../helpers/cloudinaryConfig.js';
+import nodemailer from 'nodemailer';
+import Espacio from '../models/publicarModel.js';
 
 const userRouter = express.Router();
 
-userRouter.post("/register", async (req, res) => {
+userRouter.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
 
-  console.log("register route");
+  console.log('register route');
 
   try {
     const isUserDb = await User.findOne({ email });
 
     //checking if user already exist
     if (isUserDb) {
-      return res.status(400).json({ message: "User already Registered" });
+      return res.status(400).json({ message: 'User already Registered' });
     }
 
     const newUser = new User({
       name,
       email,
-      password: password != "" ? bcryptjs.hashSync(password) : "",
+      password: password != '' ? bcryptjs.hashSync(password) : '',
     });
 
     // newUser.token =
@@ -33,7 +35,7 @@ userRouter.post("/register", async (req, res) => {
 
     await newUser.save();
 
-    console.log("testi");
+    console.log('testi');
 
     const userAuthenticated = {
       _id: newUser._id,
@@ -44,37 +46,37 @@ userRouter.post("/register", async (req, res) => {
     };
 
     res.json({
-      message: "User succesfully created, please login",
+      message: 'User succesfully created, please login',
       userAuthenticated,
     });
   } catch (error) {
     console.log(error);
     //to check mongoose validation error like empty data
-    if (error.name === "ValidationError") {
+    if (error.name === 'ValidationError') {
       let errors = [];
 
       Object.keys(error.errors).forEach((key) => {
         //   errors[key] = error.errors[key].message;
         errors.push(error.errors[key].message);
       });
-      return res.status(400).send({ message: errors.join(" ||| ") });
+      return res.status(400).send({ message: errors.join(' ||| ') });
     }
 
-    res.status(500).send({ message: "Something went wrong" });
+    res.status(500).send({ message: 'Something went wrong' });
   }
 });
 
 //login endpoint
-userRouter.post("/logIn", async (req, res) => {
+userRouter.post('/logIn', async (req, res) => {
   const { email, password } = req.body;
-  console.log("login route");
+  console.log('login route');
 
   try {
     const userDb = await User.findOne({ email });
 
     //check if user exist
     if (!userDb) {
-      return res.status(404).json({ message: "User Does Not Exist" });
+      return res.status(404).json({ message: 'User Does Not Exist' });
     }
 
     // //check if user is verified
@@ -84,7 +86,7 @@ userRouter.post("/logIn", async (req, res) => {
 
     //check if password match
     if (!bcryptjs.compareSync(password, userDb.password)) {
-      return res.status(401).send({ message: "Email or Password Wrong" });
+      return res.status(401).send({ message: 'Email or Password Wrong' });
     }
 
     const userAuthenticated = {
@@ -103,8 +105,8 @@ userRouter.post("/logIn", async (req, res) => {
 });
 
 //login with google
-userRouter.post("/googlelogin", async (req, res) => {
-  console.log("en la ruto google login");
+userRouter.post('/googlelogin', async (req, res) => {
+  console.log('en la ruto google login');
   const { access_token } = req.body; //access token sent from frot ent using the package @react-oauth/google
   try {
     //getting aud field to check client id match with our clien id sent from frontend
@@ -115,7 +117,7 @@ userRouter.post("/googlelogin", async (req, res) => {
     if (data.aud != process.env.GOOGLE_CLIENT_ID) {
       return res
         .status(400)
-        .send({ message: "Access Token not meant for this app." });
+        .send({ message: 'Access Token not meant for this app.' });
     }
 
     //after checking access token is valid and from our app now we need to get the userinfo
@@ -128,7 +130,7 @@ userRouter.post("/googlelogin", async (req, res) => {
     if (!email_verified) {
       return res
         .status(400)
-        .send({ message: "it seems your google account is not verified" });
+        .send({ message: 'it seems your google account is not verified' });
     }
 
     //now checking if an user with this given email exist or not
@@ -169,14 +171,14 @@ userRouter.post("/googlelogin", async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    res.status(400).send({ message: "something went wrong" });
+    res.status(400).send({ message: 'something went wrong' });
   }
 });
 
-userRouter.post("/userverification", isAuth,  async (req, res) => {
-  console.log("en ruta user verification");
+userRouter.post('/userverification', isAuth, async (req, res) => {
+  console.log('en ruta user verification');
 
-  console.log(req.body)
+  console.log(req.body);
 
   //  console.log(req.user)
 
@@ -189,12 +191,12 @@ userRouter.post("/userverification", isAuth,  async (req, res) => {
   //   }
   // })
   var transport = nodemailer.createTransport({
-    host: "sandbox.smtp.mailtrap.io",
+    host: 'sandbox.smtp.mailtrap.io',
     port: 2525,
     auth: {
-      user: "229ed09a150b2b",
-      pass: "81672d1564bcad"
-    }
+      user: '229ed09a150b2b',
+      pass: '81672d1564bcad',
+    },
   });
 
   try {
@@ -203,7 +205,9 @@ userRouter.post("/userverification", isAuth,  async (req, res) => {
     // console.log(userDb, "db");
 
     userDb.isVerificationProcess = true || userDb.isVerificationProcess;
+    const createdEspacio = new Espacio({ userId: req.user._id });
 
+    await createdEspacio.save();
     await userDb.save();
 
     // const cloudinaryResut = await cloudinaryUploadFiles(
@@ -215,10 +219,10 @@ userRouter.post("/userverification", isAuth,  async (req, res) => {
 
     //enviando el correo
     const info = await transport.sendMail({
-      from: "Andress-Connect <antdev1987@gmail.com>",
-      to: "antdev1987@gmail.com",
-      subject: "Confirmation Process",
-      text: "Aqui tienes las fotos para la verification",
+      from: 'Andress-Connect <antdev1987@gmail.com>',
+      to: 'antdev1987@gmail.com',
+      subject: 'Confirmation Process',
+      text: 'Aqui tienes las fotos para la verification',
       html: `
             <p> Hola: aqui estan las imagenes para verificacion </p>
             <p> click en cada enlace para descargar la imagen </p>
@@ -230,7 +234,7 @@ userRouter.post("/userverification", isAuth,  async (req, res) => {
                 (result) =>
                   `<li><a href='${result.url}'>click para descargar</a></li>`
               )
-              .join("")}
+              .join('')}
        
             </ul>
 
@@ -248,7 +252,7 @@ userRouter.post("/userverification", isAuth,  async (req, res) => {
 
     // console.log(info);
 
-    res.send("imagen guardada");
+    res.send('imagen guardada');
   } catch (error) {
     console.log(error);
   }

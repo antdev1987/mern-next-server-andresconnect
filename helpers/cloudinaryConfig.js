@@ -76,6 +76,7 @@ const cloudinaryUploadFiles = async (files, folder) => {
 const cloudinaryDeleteOneFile = async (public_id) => {
   console.log(public_id, "en la funcion");
   const result = await cloudinary.uploader.destroy(public_id);
+  console.log(result)
   return result;
 };
 
