@@ -48,6 +48,41 @@ route.post('/publicar', isAuth, async (req, res) => {
   }
 });
 
+route.put('/publicar', isAuth, async (req, res) => {
+  console.log('estoy en publciar put');
+  try {
+    // console.log(req.body.propiedadImg, 'elborody');
+    // console.log(req.body.scortImg, 'scort');
+    const { propiedadImg } = req.body;
+    // console.log(req.user);
+
+    // console.log(data);
+
+    const filterPublicar = await Espacio.findOne({
+      userId: req.user._id,
+    }).select('-userId');
+
+    // filterPublicar.propiedadImg.push(...req.body);
+
+    console.log(req.body.propiedadImg, 'yare yare')
+    req.body.propiedadImg
+      ? filterPublicar.propiedadImg = req.body.propiedadImg
+      : (filterPublicar.propiedadImg = filterPublicar.propiedadImg);
+
+    req.body.scortImg
+      ? filterPublicar.scortImg = req.body.scortImg
+      : (filterPublicar.scortImg = filterPublicar.scortImg);
+
+    const info = await filterPublicar.save();
+
+    // console.log(filterPublicar, 'filterando');
+
+    res.json(info);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 route.get('/publicar', isAuth, async (req, res) => {
   console.log('estoy en publciar get');
   try {
