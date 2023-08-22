@@ -38,6 +38,10 @@ route.post('/publicar', isAuth, async (req, res) => {
       ? filterPublicar.scortImg.push(...req.body.scortImg)
       : (filterPublicar.scortImg = filterPublicar.scortImg);
 
+    req.body.formInfo
+      ? (filterPublicar.espacioInfo = req.body.formInfo)
+      : (filterPublicar.espacioInfo = filterPublicar.espacioInfo);
+
     const info = await filterPublicar.save();
 
     console.log(filterPublicar, 'filterando');
@@ -64,13 +68,13 @@ route.put('/publicar', isAuth, async (req, res) => {
 
     // filterPublicar.propiedadImg.push(...req.body);
 
-    console.log(req.body.propiedadImg, 'yare yare')
+    console.log(req.body.propiedadImg, 'yare yare');
     req.body.propiedadImg
-      ? filterPublicar.propiedadImg = req.body.propiedadImg
+      ? (filterPublicar.propiedadImg = req.body.propiedadImg)
       : (filterPublicar.propiedadImg = filterPublicar.propiedadImg);
 
     req.body.scortImg
-      ? filterPublicar.scortImg = req.body.scortImg
+      ? (filterPublicar.scortImg = req.body.scortImg)
       : (filterPublicar.scortImg = filterPublicar.scortImg);
 
     const info = await filterPublicar.save();
@@ -95,6 +99,15 @@ route.get('/publicar', isAuth, async (req, res) => {
   } catch (error) {}
 });
 
+route.get('/publicaciones', async (req, res) => {
+  console.log('estoy en publciar get');
+  try {
+    const filterPublicar = await Espacio.find().populate("userId");
+    console.log(filterPublicar);
+    res.json(filterPublicar);
+  } catch (error) {}
+});
+
 route.delete('/publicar', isAuth, async (req, res) => {
   console.log('estoy ruta eliminar');
   console.log(req.query);
@@ -104,13 +117,13 @@ route.delete('/publicar', isAuth, async (req, res) => {
     const filterPublicar = await Espacio.findOne({
       userId: req.user._id,
     }).select('-userId');
-    
+
     filterPublicar[`${req.query.sobre}Img`] = filterPublicar[
       `${req.query.sobre}Img`
     ].filter((item, idx) => item.publicId !== req.query.publicId);
-    
+
     console.log(filterPublicar);
-    
+
     await filterPublicar.save();
     // console.log(deleteLocal)
     // console.log(filterPublicar)

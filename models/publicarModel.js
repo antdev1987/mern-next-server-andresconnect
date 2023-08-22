@@ -10,6 +10,7 @@ const espacioSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     },
+    espacioInfo: {type: Object},
   },
   { timestamps: true }
 );
